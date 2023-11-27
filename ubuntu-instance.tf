@@ -4,16 +4,16 @@ provider "aws" {
 }
 
 resource "aws_instance" "example" {
-    ami           = "ami-0c94855ba95c71c99"  # Ubuntu 20.04 LTS
+    ami           = "ami-06aa3f7caf3a30282"  # Ubuntu 20.04 LTS
     instance_type = "t2.micro"
     associate_public_ip_address = true
-
+    security_groups = [aws_security_group.example_sg]
     root_block_device {
         volume_size = 50
         volume_type = "gp2"
     }
 
-    user_data = file("${path.module}/ubuntu-init.yaml")
+    user_data = base64encode(file("${path.module}/ubuntu-init.yaml"))
 
     tags = {
         Name = "cloud-init-example"
@@ -32,10 +32,3 @@ resource "aws_security_group" "example_sg" {
     }
 }
 
-resource "aws_security_group" "example_sg" {
-    ingress {
-        from_port   = 22
-        to_port     = 22
-        protocol    = "tcp"
-    }
-}
